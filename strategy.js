@@ -1,5 +1,6 @@
 const passport = require('passport')
-const GoogleStrategy = require('passport-google-oidc')
+//const GoogleStrategy = require('passport-google-oidc')
+const GoogleStrategy = require('passport-google-oauth20')
 require('dotenv').config()
 
 passport.use(new GoogleStrategy({
@@ -8,7 +9,7 @@ passport.use(new GoogleStrategy({
   callbackURL: "http://localhost:3000/google/callback"
 },
 function(accessToken, refreshToken, profile, done) {
-  console.log(accessToken, refreshToken, profile)
+  console.log(profile)
   return done(null, profile);
 }
 ));

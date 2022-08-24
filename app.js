@@ -4,6 +4,13 @@ require('./strategy')
 let app = express()
 let session = require('express-session')
 require('dotenv').config()
+let expressLayouts = require('express-ejs-layouts')
+let pageRouter = require('./controllers/main')
+
+app.use(express.static('public'))
+app.set("view engine", "ejs")
+//app.set('layout', './views/layouts/main')
+//app.use(expressLayouts)
 
 function isLoggedIn(req, res, next)
 {
@@ -18,6 +25,8 @@ app.use(session({
 
 app.use(passport.initialize())
 app.use(passport.session())
+
+app.use("/test", pageRouter)
 
 app.get("/", (req, res)=>
 {
