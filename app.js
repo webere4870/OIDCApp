@@ -4,10 +4,13 @@ let app = express()
 let session = require('express-session')
 let pageRouter = require('./controllers/main')
 let bodyParser = require('body-parser')
+require('./Mongo')
+let UserSchema = require('./Schema')
 
 
-require('./GoogleStrategy')
-require('./FacebookStrategy')
+require('./OAuthStrategies/GoogleStrategy')
+require('./OAuthStrategies/FacebookStrategy')
+require('./OAuthStrategies/LocalStrategy')
 require('dotenv').config()
 
 
@@ -30,7 +33,7 @@ app.use(session({
     saveUninitialized: true,
     resave: false,
     store: store,
-    secret: "KLJKLDSJJJJJJJLAKJLKFJ"
+    secret: process.env.SESSION_SECRET
 }))
 app.use(passport.initialize())
 app.use(passport.session())
@@ -40,6 +43,18 @@ app.get("/auth/google", passport.authenticate('google', {scope: ['profile', 'ema
 
 app.get("/auth/facebook", passport.authenticate('facebook'))
 
+app.get("/login", (req, res)=>
+{
+    console.log("ajkd")
+})
+
+app.post(
+    '/login',
+    passport.authenticate("local"),
+    function(req, res) {
+       res.send("hads");
+    }
+ );
 // Ensure auth was successful
 app.get('/google/callback', 
   passport.authenticate('google', { failureRedirect: '/login' }),

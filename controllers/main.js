@@ -49,7 +49,7 @@ router.get("/register", (req, res)=>
 router.post("/register", (req, res)=>
 {
     let {username, password} = req.body
-    
+    console.log(username, password)
     res.send("Received")
 })
 
