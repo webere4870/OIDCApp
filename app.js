@@ -4,7 +4,6 @@ require('./strategy')
 let app = express()
 let session = require('express-session')
 require('dotenv').config()
-let expressLayouts = require('express-ejs-layouts')
 let pageRouter = require('./controllers/main')
 
 app.use(express.static('public'))
@@ -12,10 +11,6 @@ app.set("view engine", "ejs")
 //app.set('layout', './views/layouts/main')
 //app.use(expressLayouts)
 
-function isLoggedIn(req, res, next)
-{
-    req.user ? next() : res.sendStatus(401)
-}
 
 app.use(session({
     saveUninitialized: true,
@@ -26,12 +21,6 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.use("/test", pageRouter)
-
-app.get("/", (req, res)=>
-{
-    res.send('<a href="/auth/google">Authenticate with Google</a>')
-})
 
 app.get("/auth/google", passport.authenticate('google', {scope: ['profile', 'email']}))
 
@@ -43,16 +32,9 @@ app.get('/google/callback',
     res.redirect('/protected');
   });
 
-app.get("/failure", (req, res)=>
-{
-    res.send("Something went wrong")
-})
 
-app.get("/protected", isLoggedIn,(req, res)=>
-{
-    console.log(req.user)
-    res.send("Made it")
-})
+
+app.use("/", pageRouter)
 
 app.listen(3000, ()=>
 {
