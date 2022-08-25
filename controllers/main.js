@@ -30,6 +30,7 @@ router.get("/protected", isLoggedIn,(req, res)=>
     console.log(name, email, href)
     */
    let profile = getUserData(req.user)
+   console.log(profile)
     res.render("protected", profile)
 })
 
@@ -39,5 +40,17 @@ router.get('/logout', function(req, res){
       res.redirect('/');
     });
   });
+
+router.get("/register", (req, res)=>
+{
+    res.render("register")
+})
+
+router.post("/register", (req, res)=>
+{
+    let {username, password} = req.body
+    
+    res.send("Received")
+})
 
 module.exports = router

@@ -9,9 +9,11 @@ function getUserData(profile)
         picture = profile.photos[0].value
         email = profile._json.email
     }
-    else
+    else if(profile.provider == "google")
     {
-
+        name = profile.displayName
+        picture = profile.photos[0].value
+        email = profile._json.email
     }
 
     return {name: name, picture: picture, email: email}

@@ -15,14 +15,14 @@
         <div class="shape"></div>
         <div class="shape"></div>
     </div>
-    <form>
-        <h3>Login Here</h3>
+    <form method="post" action="/register">
+        <h3>Register Here</h3>
 
         <label for="username">Email</label>
-        <input type="text" placeholder="Email" id="username">
+        <input type="text" name="username" placeholder="Email" id="username">
         <label for="password">Password</label>
-        <input type="password" placeholder="Password" id="password">
-        <button>Log In</button>
+        <input name="password" type="password" placeholder="Password" id="password">
+        <button>Register</button>
 
         <div class="social">
           <a href="/auth/google"><div class="go" id="go"><i class="fab fa-google"></i>  Google</div></a>

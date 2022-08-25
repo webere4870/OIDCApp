@@ -1,19 +1,27 @@
 let express = require('express')
 let passport = require('passport')
-require('./GoogleStrategy')
-require('./FacebookStrategy')
 let app = express()
 let session = require('express-session')
+let pageRouter = require('./controllers/main')
+let bodyParser = require('body-parser')
+
+
+require('./GoogleStrategy')
+require('./FacebookStrategy')
+require('dotenv').config()
+
+
 let MongoStore = require('connect-mongodb-session')(session)
 let store = new MongoStore({
     uri: 'mongodb://localhost:27017/test',
     collection: 'OIDCSessions'
-  });
-require('dotenv').config()
-let pageRouter = require('./controllers/main')
+});
+
 
 app.use(express.static('public'))
 app.set("view engine", "ejs")
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json())
 //app.set('layout', './views/layouts/main')
 //app.use(expressLayouts)
 
@@ -24,7 +32,6 @@ app.use(session({
     store: store,
     secret: "KLJKLDSJJJJJJJLAKJLKFJ"
 }))
-
 app.use(passport.initialize())
 app.use(passport.session())
 
