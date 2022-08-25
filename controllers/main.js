@@ -1,4 +1,5 @@
 let express = require('express')
+let getUserData = require('./../userData')
 let router = express.Router()
 
 function isLoggedIn(req, res, next)
@@ -22,11 +23,14 @@ router.get("/failure", (req, res)=>
 
 router.get("/protected", isLoggedIn,(req, res)=>
 {
+    /*
     let name = req.user.displayName
     let email = req.user.emails[0].value
     let href = req.user._json.picture
     console.log(name, email, href)
-    res.render("protected", {profilePicture: href, name: name, email: email})
+    */
+   let profile = getUserData(req.user)
+    res.render("protected", profile)
 })
 
 router.get('/logout', function(req, res){
