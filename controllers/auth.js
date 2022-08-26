@@ -2,6 +2,7 @@ let passport = require('passport')
 let express = require('express')
 let router = express.Router()
 const jwt = require('jsonwebtoken')
+const CreateToken = require('./../utils/CreateToken')
 require('dotenv').config()
 router.get("/auth/google", passport.authenticate('google', {scope: ['profile', 'email']}))
 
@@ -17,15 +18,9 @@ router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false}),
   function(req, res) {
     // Successful authentication, redirect home.
-    let user = {
-      displayName: req.user.displayName,
-      name: req.user.name.givenName,
-      email: req.user._json.email,
-      provider: req.user.provider }
-  console.log(user)
-  let token = jwt.sign(user, process.env.JWT_KEY, {expiresIn: 60})
+  let [token,profile] = CreateToken(req.user)
   res.cookie("jwt", token)
-    res.redirect('/protected');
+  res.redirect('/protected');
 });
 
 

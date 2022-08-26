@@ -1,18 +1,12 @@
 let express = require('express')
-let getUserData = require('../utils/userData')
 let router = express.Router()
-let UserSchema = require('./../MongoDB/Schema')
 let ValidateJWT = require('./../utils/ValidateJWT')
+let FindOrCreate = require('./../MongoDB/FindOrCreate')
+let VerifyUser = require('./../MongoDB/VerifyUser')
 
 function isLoggedIn(req, res, next)
 {
     req.user ? next() : res.redirect("/login")
-}
-
-function FindOrCreate(req, res, next)
-{
-    console.log(req.user)
-    next()
 }
 
 
@@ -43,8 +37,8 @@ router.get("/protected", ValidateJWT, (req, res)=>
     let href = req.user._json.picture
     console.log(name, email, href)
     */
-    let profile = {name: req.JWT.name}
-
+    let profile = req.JWT
+    console.log(profile)
     res.render("protected", profile)
 })
 
@@ -58,11 +52,35 @@ router.get("/register", (req, res)=>
     res.render("register")
 })
 
-router.post("/register", (req, res)=>
+router.post("/register", async (req, res)=>
 {
     let {username, password} = req.body
-    console.log(username, password)
-    res.send("Received")
+    await FindOrCreate(username, password)
+    res.redirect("/login")
+})
+
+router.post("/login", async (req, res)=>
+{
+    let {username, password} = req.body
+    let isVerified = await VerifyUser(username, password)
+    console.log("Ver", isVerified)
+    if(isVerified == true)
+    {
+        let user = {
+            displayName: username,
+            name: username,
+            email: username,
+            provider: "Node.js Server",
+            picture: ""}
+        let [token, profile] = CreateToken(user)
+        console.log(token)
+        res.cookie("jwt", token)
+        res.redirect("/protected")
+    }
+    else
+    {
+    res.redirect("/login") 
+    }
 })
 
 module.exports = router
