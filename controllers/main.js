@@ -1,19 +1,33 @@
 let express = require('express')
-let getUserData = require('./../userData')
+let getUserData = require('../utils/userData')
 let router = express.Router()
+let UserSchema = require('./../MongoDB/Schema')
+let ValidateJWT = require('./../utils/ValidateJWT')
 
 function isLoggedIn(req, res, next)
 {
-    req.user ? next() : res.redirect("/")
+    req.user ? next() : res.redirect("/login")
 }
 
-router.get("/", (req, res)=>
+function FindOrCreate(req, res, next)
+{
+    console.log(req.user)
+    next()
+}
+
+
+router.get("/", isLoggedIn, FindOrCreate,(req, res)=>
+{
+    res.render("/protected")
+})
+
+router.get("/login", (req, res)=>
 {
     if(req.user)
     {
-        res.redirect("protected")
+        res.redirect("/")
     }
-    res.render("home")
+    res.render("login")
 })
 
 router.get("/failure", (req, res)=>
@@ -21,7 +35,7 @@ router.get("/failure", (req, res)=>
     res.send("Something went wrong")
 })
 
-router.get("/protected", isLoggedIn,(req, res)=>
+router.get("/protected", ValidateJWT, (req, res)=>
 {
     /*
     let name = req.user.displayName
@@ -29,16 +43,14 @@ router.get("/protected", isLoggedIn,(req, res)=>
     let href = req.user._json.picture
     console.log(name, email, href)
     */
-   let profile = getUserData(req.user)
-   console.log(profile)
+    let profile = {name: req.JWT.name}
+
     res.render("protected", profile)
 })
 
 router.get('/logout', function(req, res){
-    req.logout(function(err) {
-      if (err) { return next(err); }
-      res.redirect('/');
-    });
+    res.clearCookie("jwt")
+    res.redirect("/login")
   });
 
 router.get("/register", (req, res)=>

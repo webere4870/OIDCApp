@@ -3,15 +3,20 @@ let passport = require('passport')
 let app = express()
 let session = require('express-session')
 let pageRouter = require('./controllers/main')
+let authRouter = require('./controllers/auth')
 let bodyParser = require('body-parser')
-require('./Mongo')
-let UserSchema = require('./Schema')
+let cookieParser = require('cookie-parser')
+let mongoose = require('mongoose')
+require('./utils/userData')
+require('./MongoDB/Mongo')
+
 
 
 require('./OAuthStrategies/GoogleStrategy')
 require('./OAuthStrategies/FacebookStrategy')
-require('./OAuthStrategies/LocalStrategy')
+require('./OAuthStrategies/JWTStrategy')
 require('dotenv').config()
+const config = {secretOrKey:"mysecret"}
 
 
 let MongoStore = require('connect-mongodb-session')(session)
@@ -21,6 +26,7 @@ let store = new MongoStore({
 });
 
 
+app.use(cookieParser())
 app.use(express.static('public'))
 app.set("view engine", "ejs")
 app.use(bodyParser.urlencoded({extended: false}))
@@ -28,51 +34,20 @@ app.use(bodyParser.json())
 //app.set('layout', './views/layouts/main')
 //app.use(expressLayouts)
 
-
+/*
 app.use(session({
     saveUninitialized: true,
     resave: false,
     store: store,
     secret: process.env.SESSION_SECRET
-}))
+}))*/
+
 app.use(passport.initialize())
-app.use(passport.session())
-
-
-app.get("/auth/google", passport.authenticate('google', {scope: ['profile', 'email']}))
-
-app.get("/auth/facebook", passport.authenticate('facebook'))
-
-app.get("/login", (req, res)=>
-{
-    console.log("ajkd")
-})
-
-app.post(
-    '/login',
-    passport.authenticate("local"),
-    function(req, res) {
-       res.send("hads");
-    }
- );
-// Ensure auth was successful
-app.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/protected');
-});
-
-
-app.get('/auth/facebook/callback',passport.authenticate('facebook', { failureRedirect: '/login' }),
-function(req, res) {
-   res.redirect('/protected');
-});
-
-
+//app.use(passport.session())
 
 
 app.use("/", pageRouter)
+app.use("/", authRouter)
 
 app.listen(3000, ()=>
 {

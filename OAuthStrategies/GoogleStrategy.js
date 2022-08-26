@@ -9,12 +9,11 @@ passport.use(new GoogleStrategy({
   callbackURL: "http://localhost:3000/google/callback"
 },
 function(accessToken, refreshToken, profile, done) {
-  console.log(profile)
   return done(null, profile);
 }
 ));
 
-
+/*
 // Called after successful authentication
 // Puts the user onto session store
 passport.serializeUser((user, done)=>
@@ -27,4 +26,4 @@ passport.serializeUser((user, done)=>
 passport.deserializeUser((user, done)=>
 {
     done(null, user)
-})
+})*/
