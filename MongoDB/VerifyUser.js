@@ -4,22 +4,31 @@ let bcrypt = require('bcrypt')
 async function VerifyUser(username, password)
 {
     let profile = await UserSchema.findById(username)
-    if(profile)
-    {
-        bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(password, profile.salt, (err, hash) => {
-                if(hash == profile.hash)
-                {
-                    return true
-                }
-                else
-                {
-                    return false
-                }
-            });
-        });
 
-    }
+    return new Promise((resolve, reject)=>
+    {
+        if(profile)
+        {
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(password, profile.salt, (err, hash) => {
+                    if(hash == profile.hash)
+                    {
+                        resolve(true)
+                    }
+                    else
+                    {
+                        resolve(false)
+                    }
+                });
+            });
+        }
+        else
+        {
+            resolve(false)
+        }
+        
+    })
+    
 
 }
 

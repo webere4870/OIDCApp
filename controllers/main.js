@@ -3,6 +3,7 @@ let router = express.Router()
 let ValidateJWT = require('./../utils/ValidateJWT')
 let FindOrCreate = require('./../MongoDB/FindOrCreate')
 let VerifyUser = require('./../MongoDB/VerifyUser')
+let CreateToken = require('./../utils/CreateToken')
 
 function isLoggedIn(req, res, next)
 {
@@ -10,9 +11,9 @@ function isLoggedIn(req, res, next)
 }
 
 
-router.get("/", isLoggedIn, FindOrCreate,(req, res)=>
+router.get("/", isLoggedIn,(req, res)=>
 {
-    res.render("/protected")
+    res.redirect("/protected")
 })
 
 router.get("/login", (req, res)=>
@@ -21,7 +22,7 @@ router.get("/login", (req, res)=>
     {
         res.redirect("/")
     }
-    res.render("login")
+    res.render("login", {error: ""})
 })
 
 router.get("/failure", (req, res)=>
@@ -38,7 +39,7 @@ router.get("/protected", ValidateJWT, (req, res)=>
     console.log(name, email, href)
     */
     let profile = req.JWT
-    console.log(profile)
+    console.log(profile, "profile")
     res.render("protected", profile)
 })
 
@@ -49,38 +50,49 @@ router.get('/logout', function(req, res){
 
 router.get("/register", (req, res)=>
 {
-    res.render("register")
+    res.render("register", {error: ""})
 })
 
 router.post("/register", async (req, res)=>
 {
     let {username, password} = req.body
-    await FindOrCreate(username, password)
-    res.redirect("/login")
+    let insertion = await FindOrCreate(username, password, res)
+    if(insertion.inserted == false)
+    {
+        res.render("register", {error: "User already exists"})  
+    }
+    else
+    {
+        res.render("/login", {error: ""})
+    }
+    
 })
 
 router.post("/login", async (req, res)=>
 {
     let {username, password} = req.body
-    let isVerified = await VerifyUser(username, password)
-    console.log("Ver", isVerified)
-    if(isVerified == true)
+    VerifyUser(username, password).then((isVerified)=>
     {
-        let user = {
-            displayName: username,
-            name: username,
-            email: username,
-            provider: "Node.js Server",
-            picture: ""}
-        let [token, profile] = CreateToken(user)
-        console.log(token)
-        res.cookie("jwt", token)
-        res.redirect("/protected")
-    }
-    else
+        if(isVerified == true)
+        {
+            let user = {
+                displayName: username,
+                name: {givenName: username},
+                _json: {email: username, picture: "/person-circle.svg"},
+                provider: "Node.js Server"}
+            let [token, profile] = CreateToken(user)
+            res.cookie("jwt", token)
+            res.redirect("/protected")
+        }
+        else
+        {
+            res.render("login", {error: "Invalid Email or Password"}) 
+        }
+    })
+    .catch((err)=>
     {
-    res.redirect("/login") 
-    }
+        res.redirect("/login", {error: "Invalid Password"})
+    })
 })
 
 module.exports = router

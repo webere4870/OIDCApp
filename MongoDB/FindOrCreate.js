@@ -1,19 +1,28 @@
 let UserSchema = require('./Schema')
 let bcrypt = require('bcrypt')
 
-async function FindOrCreate(username, password)
+async function FindOrCreate(username, password, res)
 {
-    let data = await UserSchema.findById(username)
-    if(data == null)
+    return new Promise((resolve, reject)=>
     {
-        bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(password, salt, async function(err, hash) {
-                let newRecord = await UserSchema.create({_id: username, hash: hash, salt: salt})
-                await newRecord.save()
-                console.log(newRecord)
-            });
+        UserSchema.findOne({_id: username}, (err, result)=>
+        {
+            if(result == null)
+            {
+                bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.hash(password, salt, async function(err, hash) {
+                        let newRecord = await UserSchema.create({_id: username, hash: hash, salt: salt})
+                        await newRecord.save()
+                        resolve({inserted: true})
+                    });
+                })
+            }
+            else
+            {
+                resolve({inserted: false})
+            }
         })
-    }
+    })
 }
 
 module.exports = FindOrCreate

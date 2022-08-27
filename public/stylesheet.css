@@ -51,7 +51,7 @@ form{
     background-color: rgba(255,255,255,0.13);
     border: 2px solid rgba(255,255,255,0.1);
     box-shadow: 0 0 40px rgba(8,7,16,0.6);
-    padding: 50px 35px;
+    padding: 90px 35px;
     position: absolute;
     transform: translate(-50%,-50%);
     top: 50%;
@@ -70,6 +70,17 @@ form h3{
     font-size: 32px;
     font-weight: 500;
     line-height: 42px;
+    text-align: center;
+}
+
+.errorMessage
+{
+    padding: 10px;
+    background: rgba(255, 153, 153, 0.342);
+    color: black;
+    border-radius: 10px;
+    border: 1px solid red;
+    margin-top: 8px;
     text-align: center;
 }
 

@@ -17,13 +17,15 @@
     </div>
     <form method="post" action="/register">
         <h3>Register Here</h3>
-
+        <% if(error) {%>
+          <h4 class="errorMessage"><%=error %> </h4>
+        <% } %> 
         <label for="username">Email</label>
         <input type="text" name="username" placeholder="Email" id="username">
         <label for="password">Password</label>
         <input name="password" type="password" placeholder="Password" id="password">
         <button>Register</button>
-
+        <a href="/login"><div>Login</div></a>
         <div class="social">
           <a href="/auth/google"><div class="go" id="go"><i class="fab fa-google"></i>  Google</div></a>
           <a href="/auth/facebook"><div class="fb" id="fb"><i class="fab fa-facebook"></i>  Facebook</div></a>
