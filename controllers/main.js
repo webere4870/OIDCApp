@@ -63,7 +63,7 @@ router.post("/register", async (req, res)=>
     }
     else
     {
-        res.render("/login", {error: ""})
+        res.render("login", {error: ""})
     }
     
 })
