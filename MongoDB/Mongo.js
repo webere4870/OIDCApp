@@ -1,5 +1,5 @@
 let mongoose = require('mongoose')
-
+require('dotenv').config()
 class Database
 {
     constructor()
@@ -8,7 +8,7 @@ class Database
     }
     connect()
     {
-        mongoose.connect("mongodb://localhost:27017/test")
+        mongoose.connect(process.env.MONGO_URI)
     }
 };
 
