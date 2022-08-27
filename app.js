@@ -21,10 +21,10 @@ const config = {secretOrKey:"mysecret"}
 
 
 let MongoStore = require('connect-mongodb-session')(session)
-let store = new MongoStore({
-    uri: 'mongodb://localhost:27017/test',
-    collection: 'OIDCSessions'
-});
+// let store = new MongoStore({
+//     uri: 'mongodb://localhost:27017/test',
+//     collection: 'OIDCSessions'
+// });
 
 
 app.use(cookieParser())
